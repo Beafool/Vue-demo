@@ -1,75 +1,67 @@
 <template>
-  <div class="todo-container">
-    <div class="todo-wrap">
-      <Header :addTodo="addTodo"/>
-      <Main :todos="todos" :deleteTodo="deleteTodo"/>
-      <Footer :todos="todos" :slectAllTodos="slectAllTodos" :deleteAllCompleted="deleteAllCompleted" />
-    </div>
+  <div>
+    <h2 v-if="!repoName">LOADING...</h2>
+    <h3 v-else>
+      most star repo is <a :href="repoUrl">{{repoName}}</a>
+    </h3>
   </div>
+
 </template>
 <script>
-  // import Header from './components/Header.vue'
-  import Main from './components/Main.vue'
-  import Footer from './components/Footer.vue'
-  import storageUtils from "./utils/storageUtils";
-
+  import axios from 'axios'
   export default {
-
-    data () {
-      return {
-        todos: storageUtils.getTodos()
-      }
-    },
-
-    methods: {
-      // 添加todo
-      addTodo (todo) {
-        this.todos.unshift(todo)
-      },
-
-      // 删除todo
-      deleteTodo (index) {
-        this.todos.splice(index, 1)
-      },
-
-      // 对所有todo进行全选或全不选
-      slectAllTodos (isCheck) {
-        this.todos.forEach(todo => todo.completed = isCheck)
-      },
-
-      // 删除所有已完成的
-      deleteAllCompleted () {
-        this.todos = this.todos.filter(todo => !todo.completed)
-      },
-
-      selectTodo (todo, isCheck) {
-        todo.completed = isCheck
-      }
-
-
-    },
-    watch:{
-        todos:{
-          deep:true,//深度监视
-          handler:storageUtils.saveTodos
-        }
-    },
-    components: {
-      // Header,
-      Main,
-      Footer
+  data(){
+    return {
+      repoName:'', //仓库的名称
+      repoUrl:'',  //仓库的url
     }
+  },
+   async mounted() {
+
+      const url = `https://api.github.com/search/repositories?q=v&sort=stars`
+     /* //使用vue-resource发送异步ajax请求
+      this.$http.get(url) .then(response =>{//请求成功了
+      //取出数据
+        const  result =response.data
+        const { name,html_url } =result.items[0]
+        //更新状态数据
+        this.repoName =html_url
+        this.repoName =name
+
+      }).catch(error =>{
+      alert('请求出错了')
+      })*/
+
+  /*   //使用axios发送ajax异步请求
+      axios.get(url) .then(response =>{//请求成功了
+        //取出数据
+        const  result =response.data
+        const { name,html_url } =result.items[0]
+        //更新状态数据
+        this.repoName =html_url
+        this.repoName =name
+
+      }).catch(error =>{
+        alert('请求出错了')
+      })*/
+
+      try {
+        const response = await axios.get(url)
+        //取出数据
+        const  result =response.data
+        const { name,html_url } =result.items[0]
+        //更新状态数据
+        this.repoName =html_url
+        this.repoName =name
+      }catch (error) {
+        alert('请求出错了')
+      }
+
+    }
+
+
   }
 </script>
 <style>
-  .todo-container {
-    width: 600px;
-    margin: 0 auto;
-  }
 
-  .todo-container .todo-wrap {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
 </style>

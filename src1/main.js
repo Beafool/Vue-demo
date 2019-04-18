@@ -3,10 +3,12 @@
  */
 import Vue from 'vue'
 import App from './App.vue'
-import VueResource from 'vue-resource'
+import Header from './components/Header.vue'
 
-//声明使用插件
-Vue.use(VueResource) //所有的组件对象都有了一个属性对象$http， .get()/.post() 发ajax请求
+// import './base.css'
+
+// 注册全局组件
+Vue.component('Header', Header)
 
 /* eslint-disable no-new */
 new Vue({
